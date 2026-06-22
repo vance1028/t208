@@ -5,6 +5,8 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+      force-request: true
+      force-response: true
 
 spring:
   application:
@@ -15,8 +17,9 @@ spring:
     default-property-inclusion: non_null
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
+    locale: zh_CN
   datasource:
-    url: jdbc:mysql://localhost:3307/wms_inventory?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3307/wms_inventory?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&useInformationSchema=true&nullCatalogMeansCurrent=true
     username: wms
     password: wms123
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,6 +27,10 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 5
       connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+      auto-commit: true
   jpa:
     hibernate:
       ddl-auto: none
@@ -34,6 +41,9 @@ spring:
         format_sql: true
         jdbc:
           batch_size: 50
+        connection:
+          characterEncoding: UTF-8
+          useUnicode: true
     open-in-view: false
   sql:
     init:
@@ -41,7 +51,17 @@ spring:
       schema-locations: classpath:db/schema.sql
       data-locations: classpath:db/data.sql
       encoding: UTF-8
+      continue-on-error: false
 
 inventory:
   reservation:
     default-timeout-minutes: 30
+
+logging:
+  charset:
+    console: UTF-8
+    file: UTF-8
+  level:
+    root: INFO
+    com.wms.inventory: INFO
+    org.hibernate.SQL: WARN

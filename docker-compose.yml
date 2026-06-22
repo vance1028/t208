@@ -11,10 +11,13 @@ services:
       MYSQL_USER: wms
       MYSQL_PASSWORD: wms123
       TZ: Asia/Shanghai
+      LANG: C.UTF-8
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --default-authentication-plugin=mysql_native_password
+      - --init-connect=SET NAMES utf8mb4
+      - --skip-character-set-client-handshake
     ports:
       - "3307:3306"
     volumes:
@@ -23,7 +26,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 30
+      start_period: 10s
 
   inventory-service:
     build: .
@@ -34,11 +38,13 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wms_inventory?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wms_inventory?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&useInformationSchema=true&nullCatalogMeansCurrent=true
       SPRING_DATASOURCE_USERNAME: wms
       SPRING_DATASOURCE_PASSWORD: wms123
       SERVER_PORT: 7390
       TZ: Asia/Shanghai
+      LANG: C.UTF-8
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Duser.timezone=Asia/Shanghai"
     ports:
       - "7390:7390"
 
